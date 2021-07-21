@@ -7,7 +7,7 @@ import { CreatePhotoDto } from "./dto/create.photo.dto";
 export class AlbumRepository extends Repository<Album> {
     async getPhotos(albumId: string): Promise<Album[]> {
         const query = this.createQueryBuilder('album');
-        query.where({ albumId });
+        query.where({ albumId }).select(['album.title', 'album.thumbnailUrl']);
 
         try {
             const photos = await query.getMany();
