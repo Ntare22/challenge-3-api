@@ -1,12 +1,20 @@
+import { InternalServerErrorException } from "@nestjs/common";
 import { EntityRepository, Repository } from "typeorm";
 import { Album } from './album.entity'
 import { CreatePhotoDto } from "./dto/create.photo.dto";
 
 @EntityRepository(Album)
 export class AlbumRepository extends Repository<Album> {
-    async getPhotos(id: string): Promise<Album[]> {
-        const photos = this.find();
-        return photos;
+    async getPhotos(albumId: string): Promise<Album[]> {
+        const query = this.createQueryBuilder('album');
+        query.where({ albumId });
+
+        try {
+            const photos = await query.getMany();
+            return photos;
+        } catch (error) {
+            throw new InternalServerErrorException()
+        }
     }
 
     async createPhoto(createPhotoDto: CreatePhotoDto): Promise<Album> {
